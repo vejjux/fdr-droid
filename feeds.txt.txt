@@ -1,0 +1,10 @@
+http://feeds.feedburner.com/FreedomainRadioVolume6
+http://freedomainradio.com/feeds/Freedomain_0_to_499.xml
+http://freedomainradio.com/feeds/Freedomain_500_to_999.xml
+http://freedomainradio.com/feeds/Freedomain_1000_to_1499.xml
+http://freedomainradio.com/feeds/Freedomain_1500_to_1999.xml
+http://freedomainradio.com/feeds/Freedomain_2000_to_2499.xml
+http://freedomainradio.com/feeds/Freedomain_2500_to_2999.xml
+http://freedomainradio.com/feeds/Freedomain_3000_to_3499.xml
+http://feeds.feedburner.com/FreedomainRadio-IntroPhilosophy
+http://feeds.feedburner.com/PhilosophicalParenting
