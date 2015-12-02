@@ -3,7 +3,8 @@
     android:layout_width="fill_parent" android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="#333333">
+    android:background="#333333"
+    android:padding="20dp">
 
     <WebView
         android:layout_width="92dp"
@@ -40,6 +41,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OK"
+        android:text="Dismiss"
         android:id="@+id/button_settings_dismiss" />
 </LinearLayout>

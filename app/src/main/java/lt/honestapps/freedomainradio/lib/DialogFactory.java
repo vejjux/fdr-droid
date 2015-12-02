@@ -11,9 +11,6 @@ import android.widget.TextView;
 
 import lt.honestapps.freedomainradio.R;
 
-/**
- * Created by vejjux on 15.10.11.
- */
 public class DialogFactory {
 
     public interface CallbackDialogFactory{
@@ -56,7 +53,7 @@ public class DialogFactory {
     //help dialog
     public static void showHelpDlg(Context context){
         final Dialog dialog = new Dialog(context);
-        dialog.setContentView(R.layout.belp_box);
+        dialog.setContentView(R.layout.help_box);
         dialog.setTitle("Podcast player usage");
         dialog.findViewById(R.id.button_dismiss_help).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +76,7 @@ public class DialogFactory {
         return dialog;
     }
 
-    //splash dialog
+    //settings dialog
     public static Dialog createSettingsDlg(Context context,View.OnClickListener resetClickListener){
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.settings_box);

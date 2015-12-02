@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -47,12 +48,21 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layoutBottom = (LinearLayout) findViewById(R.id.layout_bottom);
         layoutBottom.addView(auPlay,0);
 
+        //create the tutorial webview
+        WebView wvTut = ((WebView) findViewById(R.id.webview_tut));
+        wvTut.loadUrl("file:///android_res/raw/tutorial.html");
+        wvTut.setVisibility(View.GONE);
+
         // PodMan
         podMan = new PodMan(this, handler, new PodMan.PodmanCallBacks() {
             @Override
             public void onSetInfo(String info) {
                 TextView tv = (TextView) findViewById(R.id.text_info);
                 tv.setText(info);
+            }
+            @Override
+            public void onSetTutorialVis(boolean vis) {
+                findViewById(R.id.webview_tut).setVisibility( vis ? View.VISIBLE : View.GONE );
             }
         }, auPlay);
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_view);

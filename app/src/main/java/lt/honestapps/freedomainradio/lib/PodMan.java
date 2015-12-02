@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,9 +18,6 @@ import java.util.ArrayList;
 
 import lt.honestapps.freedomainradio.R;
 
-/**
- * Created by vejjux on 15.10.5.
- */
 public class PodMan extends LinearLayout implements PodView.CallbackPodView{
 
     final Context context;
@@ -34,9 +32,11 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
     public boolean loading = false;
 
     private LinearLayout layout = null;
+    private WebView webViewTut = null;
 
     public interface PodmanCallBacks{
         void onSetInfo(String info);
+        void onSetTutorialVis(boolean vis);
     }
 
     public PodMan(final Context context,Handler handler,PodmanCallBacks callBacks,AuPlay auPlay){
@@ -48,7 +48,7 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
         this.auPlay = auPlay;
         //init
         dbHelper = new DbHelper(context);
-        splashDlg = DialogFactory.createSplashDlg(context, "FDR", "Generating podcast list...");
+        splashDlg = DialogFactory.createSplashDlg(context, "FDR", "Loading podcast list...");
         splashDlg.setCancelable(false);
         splashDlg.setCanceledOnTouchOutside(false);
         this.setOrientation(VERTICAL);
@@ -58,7 +58,7 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
     // private shit
 
     private ArrayList<PodView> getSafeList(){
-        ArrayList<PodView> safeList = new ArrayList<PodView>();
+        ArrayList<PodView> safeList = new ArrayList<>();
         for(int i=0; i<getChildCount(); i++){
             safeList.add((PodView)getChildAt(i));
         }
@@ -91,7 +91,7 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
         if(!loading) {
             loading = true;
             ((TextView) splashDlg.findViewById(R.id.text_splash_info))
-                    .setText("Clearing the list");
+                    .setText("Clearing the list.");
             splashDlg.show();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -103,13 +103,16 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
                         podView.cancelAndWait();
                         removeView(podView);
                     }
+                    callBacks.onSetInfo("0 podcasts");
                     splashDlg.dismiss();
                     //get all podcasts and loop
                     ArrayList<Podcast> pods = dbHelper.getAllPodcasts(onlyVis);
                     if (pods.size() > 0) {
+                        callBacks.onSetTutorialVis(false);
                         addPodView(pods, 0);
                     } else {
                         loading = false;
+                        callBacks.onSetTutorialVis(true);
                     }
                 }
             }, 500);
@@ -136,7 +139,7 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
             }
             //download xml
             ((TextView) splashDlg.findViewById(R.id.text_splash_info))
-                    .setText("Downloading XML");
+                    .setText("Downloading podcast feed.");
             splashDlg.show();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -144,9 +147,7 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
                     final XmlHelper xmlHelper = new XmlHelper(new XmlHelper.OnPodcastFound() {
                         @Override
                         public void onPodcast(Podcast podcast) {
-                            if (dbHelper.addPodcastIfNotExist(podcast)) {
-                                //callBacks.onSetInfo(Integer.toString(dbHelper.getCount())+" podcasts");
-                            }
+                            dbHelper.addPodcastIfNotExist(podcast);
                         }
 
                         @Override
@@ -194,8 +195,8 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
 
     public AuPlay.AuPlayItem getNextPlayerItem(AuPlay.AuPlayItem source){
         int pos = indexOfChild((PodView) source.id);
-        PodView nextPV = null;
-        while( nextPV == null && pos > 0){
+        PodView nextPV;
+        while( pos > 0){
             pos--;
             nextPV = (PodView)getChildAt(pos);
             if(FileOps.podcastFileExists(nextPV.getPodcast())) {
@@ -204,8 +205,6 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
                 item.uri = FileOps.getStoredFile(nextPV.getPodcast());
                 item.id = nextPV;
                 return item;
-            }else{
-                nextPV = null;
             }
         }
         return null;
@@ -247,6 +246,10 @@ public class PodMan extends LinearLayout implements PodView.CallbackPodView{
     public void onDeletePodView(PodView podView){
         if(onlyVis){
             removeView(podView);
+            callBacks.onSetInfo(Integer.toString(getChildCount()) + " podcasts");
+            if(getChildCount()==0){
+                callBacks.onSetTutorialVis(true);
+            }
         }
     }
     @Override
